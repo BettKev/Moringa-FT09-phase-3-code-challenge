@@ -4,10 +4,7 @@ from models.article import Article
 from models.author import Author
 from models.magazine import Magazine
 
-def create_author(cursor, name):
-    """Create an author and return the ID."""
-    cursor.execute('INSERT INTO authors (name) VALUES (?)', (name,))
-    return cursor.lastrowid
+
 
 def create_magazine(cursor, name, category):
     """Create a magazine and return the ID."""
@@ -67,7 +64,7 @@ def main():
         cursor = conn.cursor()
 
         # Create records
-        author_id = create_author(cursor, author_name)
+        author_id = Author.create_author(cursor, author_name)
         magazine_id = create_magazine(cursor, magazine_name, magazine_category)
         create_article(cursor, article_title, article_content, author_id, magazine_id)
 
