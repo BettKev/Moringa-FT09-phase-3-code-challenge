@@ -16,17 +16,5 @@ class Article:
             raise ValueError("Title must be a string between 5 and 50 characters.")
         self._title = value
 
-    def author(self, cursor):
-        """Fetch the author of this article."""
-        query = "SELECT * FROM authors WHERE id = ?"
-        cursor.execute(query, (self.author_id,))
-        return cursor.fetchone()
-
-    def magazine(self, cursor):
-        """Fetch the magazine of this article."""
-        query = "SELECT * FROM magazines WHERE id = ?"
-        cursor.execute(query, (self.magazine_id,))
-        return cursor.fetchone()
-
     def __repr__(self):
         return f'<Article {self.title}>'

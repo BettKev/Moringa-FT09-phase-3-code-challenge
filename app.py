@@ -4,67 +4,83 @@ from models.article import Article
 from models.author import Author
 from models.magazine import Magazine
 
+def create_author(cursor, name):
+    """Create an author and return the ID."""
+    cursor.execute('INSERT INTO authors (name) VALUES (?)', (name,))
+    return cursor.lastrowid
+
+def create_magazine(cursor, name, category):
+    """Create a magazine and return the ID."""
+    cursor.execute('INSERT INTO magazines (name, category) VALUES (?, ?)', (name, category))
+    return cursor.lastrowid
+
+def create_article(cursor, title, content, author_id, magazine_id):
+    """Create an article and return the ID."""
+    cursor.execute(
+        'INSERT INTO articles (title, content, author_id, magazine_id) VALUES (?, ?, ?, ?)',
+        (title, content, author_id, magazine_id)
+    )
+    return cursor.lastrowid
+
+def display_records(cursor):
+    """Fetch and display all records from the database."""
+    print("\nMagazines:")
+    cursor.execute('SELECT * FROM magazines')
+    for record in cursor.fetchall():
+        print(Magazine(record["id"], record["name"], record["category"]))
+
+    print("\nAuthors:")
+    cursor.execute('SELECT * FROM authors')
+    for record in cursor.fetchall():
+        print(Author(record["id"], record["name"]))
+
+    print("\nArticles:")
+    cursor.execute('SELECT * FROM articles')
+    for record in cursor.fetchall():
+        print(Article(record["id"], record["title"], record["content"], record["author_id"], record["magazine_id"]))
+
 def main():
-    # Initialize the database and create tables
+    # Initialize the database
     create_tables()
 
-    # Collect user input
-    author_name = input("Enter author's name: ")
-    magazine_name = input("Enter magazine name: ")
-    magazine_category = input("Enter magazine category: ")
-    article_title = input("Enter article title: ")
-    article_content = input("Enter article content: ")
+    # Collect user input with validation
+    author_name = input("Enter author's name: ").strip()
+    if not author_name:
+        print("Author's name cannot be empty.")
+        return
+
+    magazine_name = input("Enter magazine name: ").strip()
+    magazine_category = input("Enter magazine category: ").strip()
+    if not magazine_name or not magazine_category:
+        print("Magazine name and category cannot be empty.")
+        return
+
+    article_title = input("Enter article title: ").strip()
+    article_content = input("Enter article content: ").strip()
+    if not article_title or not article_content:
+        print("Article title and content cannot be empty.")
+        return
 
     # Connect to the database
     conn = get_db_connection()
-    cursor = conn.cursor()
+    try:
+        cursor = conn.cursor()
 
+        # Create records
+        author_id = create_author(cursor, author_name)
+        magazine_id = create_magazine(cursor, magazine_name, magazine_category)
+        create_article(cursor, article_title, article_content, author_id, magazine_id)
 
-    '''
-        The following is just for testing purposes, 
-        you can modify it to meet the requirements of your implmentation.
-    '''
+        conn.commit()
 
-    # Create an author
-    cursor.execute('INSERT INTO authors (name) VALUES (?)', (author_name,))
-    author_id = cursor.lastrowid # Use this to fetch the id of the newly created author
+        # Display all records
+        display_records(cursor)
 
-    # Create a magazine
-    cursor.execute('INSERT INTO magazines (name, category) VALUES (?,?)', (magazine_name, magazine_category))
-    magazine_id = cursor.lastrowid # Use this to fetch the id of the newly created magazine
-
-    # Create an article
-    cursor.execute('INSERT INTO articles (title, content, author_id, magazine_id) VALUES (?, ?, ?, ?)',
-                   (article_title, article_content, author_id, magazine_id))
-
-    conn.commit()
-
-    # Query the database for inserted records. 
-    # The following fetch functionality should probably be in their respective models
-
-    cursor.execute('SELECT * FROM magazines')
-    magazines = cursor.fetchall()
-
-    cursor.execute('SELECT * FROM authors')
-    authors = cursor.fetchall()
-
-    cursor.execute('SELECT * FROM articles')
-    articles = cursor.fetchall()
-
-    conn.close()
-
-    # Display results
-    print("\nMagazines:")
-    for magazine in magazines:
-        print(Magazine(magazine["id"], magazine["name"], magazine["category"]))
-
-    print("\nAuthors:")
-    for author in authors:
-        print(Author(author["id"], author["name"]))
-
-    print("\nArticles:")
-    for article in articles:
-        print(Article(article["id"], article["title"], article["content"], article["author_id"], article["magazine_id"]))
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        conn.rollback()
+    finally:
+        conn.close()
 
 if __name__ == "__main__":
     main()
