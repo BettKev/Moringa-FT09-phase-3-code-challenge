@@ -24,5 +24,10 @@ class Magazine:
             raise ValueError("Category must be a non-empty string.")
         self._category = value
 
+    def create_magazine(cursor, name, category):
+        """Create a magazine and return the ID."""
+        cursor.execute('INSERT INTO magazines (name, category) VALUES (?, ?)', (name, category))
+        return cursor.lastrowid
+
     def __repr__(self):
         return f'<Magazine {self.name}>'
