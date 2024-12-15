@@ -1,10 +1,32 @@
 class Article:
     def __init__(self, id, title, content, author_id, magazine_id):
         self.id = id
-        self.title = title
+        self._title = title
         self.content = content
         self.author_id = author_id
         self.magazine_id = magazine_id
+
+    @property
+    def title(self):
+        return self._title
+
+    @title.setter
+    def title(self, value):
+        if not isinstance(value, str) or not (5 <= len(value) <= 50):
+            raise ValueError("Title must be a string between 5 and 50 characters.")
+        self._title = value
+
+    def author(self, cursor):
+        """Fetch the author of this article."""
+        query = "SELECT * FROM authors WHERE id = ?"
+        cursor.execute(query, (self.author_id,))
+        return cursor.fetchone()
+
+    def magazine(self, cursor):
+        """Fetch the magazine of this article."""
+        query = "SELECT * FROM magazines WHERE id = ?"
+        cursor.execute(query, (self.magazine_id,))
+        return cursor.fetchone()
 
     def __repr__(self):
         return f'<Article {self.title}>'
