@@ -8,13 +8,7 @@ from models.magazine import Magazine
 
 
 
-def create_article(cursor, title, content, author_id, magazine_id):
-    """Create an article and return the ID."""
-    cursor.execute(
-        'INSERT INTO articles (title, content, author_id, magazine_id) VALUES (?, ?, ?, ?)',
-        (title, content, author_id, magazine_id)
-    )
-    return cursor.lastrowid
+
 
 def display_records(cursor):
     """Fetch and display all records from the database."""
