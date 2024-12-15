@@ -4,12 +4,7 @@ from models.article import Article
 from models.author import Author
 from models.magazine import Magazine
 
-
-
-
-
-
-
+#function to display records in the database
 def display_records(cursor):
     """Fetch and display all records from the database."""
     print("\nMagazines:")
@@ -57,7 +52,7 @@ def main():
         # Create records
         author_id = Author.create_author(cursor, author_name)
         magazine_id = Magazine.create_magazine(cursor, magazine_name, magazine_category)
-        create_article(cursor, article_title, article_content, author_id, magazine_id)
+        Article.create_article(cursor, article_title, article_content, author_id, magazine_id)
 
         conn.commit()
 
