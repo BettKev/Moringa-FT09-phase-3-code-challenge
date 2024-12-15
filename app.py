@@ -31,7 +31,7 @@ def main():
     try:
         cursor = conn.cursor()
 
-        # Example CRUD operations
+        # Example CRUD operations for testing purposes
         print("Creating records...")
         author_id = Author.create(cursor, "John Doe")
         magazine_id = Magazine.create(cursor, "Tech Monthly", "Technology")
@@ -48,6 +48,9 @@ def main():
         print("\nDisplaying records after update:")
         display_records(cursor)
 
+
+        #Uncomment this section to test the delete functionality implementation
+        
         # print("\nDeleting records...")
         # Article.delete(cursor, article_id)
         # Author.delete(cursor, author_id)
